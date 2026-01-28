@@ -20,6 +20,7 @@ export {
   useTransactionStats,
   useActiveTasks,
   useTask,
+  useAcceptTask,
   useSupportTickets,
   useRespondToTicket,
 } from './useAdmin';
@@ -28,4 +29,5 @@ export {
   useDeliveryRequests,
   useDeliveryDetail,
   useDeliveryStats,
+  useAcceptDelivery,
 } from './useDelivery';

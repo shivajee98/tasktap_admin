@@ -72,4 +72,9 @@ export const deliveryService = {
         const response = await apiClient.get(API_ENDPOINTS.DELIVERY_REQUESTS.STATS);
         return response.data;
     },
+
+    acceptDelivery: async (id: string): Promise<{ data: DeliveryRequest }> => {
+        const response = await apiClient.post(`${API_ENDPOINTS.DELIVERY_REQUESTS.BY_ID(id)}/accept`);
+        return response.data;
+    },
 };

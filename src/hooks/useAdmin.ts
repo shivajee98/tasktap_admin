@@ -185,6 +185,18 @@ export const useTask = (id: string) => {
   });
 };
 
+export const useAcceptTask = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => adminService.acceptTask(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: adminKeys.tasks() });
+      queryClient.invalidateQueries({ queryKey: adminKeys.dashboard() });
+    },
+  });
+};
+
 // Support Tickets
 export const useSupportTickets = (filters?: { page?: number; limit?: number; status?: string; priority?: string }) => {
   return useQuery({

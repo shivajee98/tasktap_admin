@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useDeliveryRequests } from "@/hooks";
+import { useDeliveryRequests, useAcceptDelivery } from "@/hooks";
 import { Search, Filter, Eye, Truck, Package, MapPin, Phone } from "lucide-react";
 import { DeliveryRequestStatus, DeliveryRequestType } from "@/services/deliveryService";
 
@@ -9,6 +9,7 @@ export default function DeliveriesPage() {
     const [statusFilter, setStatusFilter] = useState("ALL");
     const [search, setSearch] = useState("");
 
+    const { mutate: acceptDelivery, isPending: isAccepting } = useAcceptDelivery();
     const { data, isLoading } = useDeliveryRequests({
         page: 1,
         limit: 50,
@@ -73,8 +74,8 @@ export default function DeliveriesPage() {
                             key={status}
                             onClick={() => setStatusFilter(status)}
                             className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${statusFilter === status
-                                    ? 'bg-orange-500 text-white'
-                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                ? 'bg-orange-500 text-white'
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                 }`}
                         >
                             {status.replace('_', ' ')}
@@ -177,9 +178,20 @@ export default function DeliveriesPage() {
                                             {new Date(delivery.createdAt).toLocaleDateString()}
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <button className="text-gray-400 hover:text-orange-500 transition-colors p-1">
-                                                <Eye size={18} />
-                                            </button>
+                                            <div className="flex justify-end gap-2">
+                                                {delivery.status === 'PENDING' && (
+                                                    <button
+                                                        onClick={() => acceptDelivery(delivery.id)}
+                                                        disabled={isAccepting}
+                                                        className="text-white bg-green-500 hover:bg-green-600 px-3 py-1 rounded text-xs font-semibold transition-colors disabled:opacity-50"
+                                                    >
+                                                        {isAccepting ? '...' : 'Accept'}
+                                                    </button>
+                                                )}
+                                                <button className="text-gray-400 hover:text-orange-500 transition-colors p-1">
+                                                    <Eye size={18} />
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))

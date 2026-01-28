@@ -323,6 +323,11 @@ export const adminService = {
     return response.data;
   },
 
+  acceptTask: async (id: string): Promise<{ data: Task }> => {
+    const response = await apiClient.post(`/tasks/${id}/accept`);
+    return response.data;
+  },
+
   // Support Tickets
   getSupportTickets: async (params?: { page?: number; limit?: number; status?: string; priority?: string }): Promise<ApiPaginatedResponse<SupportTicket>> => {
     const response = await apiClient.get(API_ENDPOINTS.ADMIN.SUPPORT_TICKETS, { params });

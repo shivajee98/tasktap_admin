@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { deliveryService } from '../services/deliveryService';
 
 export const deliveryKeys = {
@@ -29,5 +29,16 @@ export const useDeliveryStats = () => {
     return useQuery({
         queryKey: deliveryKeys.stats(),
         queryFn: () => deliveryService.getStats(),
+    });
+};
+
+export const useAcceptDelivery = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (id: string) => deliveryService.acceptDelivery(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: deliveryKeys.all });
+        },
     });
 };
