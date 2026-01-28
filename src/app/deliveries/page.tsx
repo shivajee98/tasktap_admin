@@ -55,20 +55,20 @@ export default function DeliveriesPage() {
     };
 
     return (
-        <div className="p-6">
-            <div className="flex justify-between items-center mb-6">
+        <div className="p-4 md:p-6 max-w-full overflow-hidden">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
                 <h1 className="text-2xl font-bold text-gray-900">Delivery Management</h1>
-                <div className="flex items-center gap-4">
-                    <span className="text-sm text-gray-500">Total Found: {allDeliveries.length}</span>
-                    <button className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition">
+                <div className="flex items-center justify-between sm:justify-end gap-4">
+                    <span className="text-sm text-gray-500 font-medium">Total: {allDeliveries.length}</span>
+                    <button className="bg-orange-500 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-orange-600 transition shadow-lg shadow-orange-200 flex items-center gap-2">
                         Export Stats
                     </button>
                 </div>
             </div>
 
             {/* Filters */}
-            <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 flex flex-wrap gap-4 items-center justify-between">
-                <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0">
+            <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-6 flex flex-col lg:flex-row gap-4 lg:items-center justify-between">
+                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
                     {['ALL', 'PENDING', 'ACCEPTED', 'IN_TRANSIT', 'DELIVERED', 'CANCELLED'].map((status) => (
                         <button
                             key={status}
@@ -96,10 +96,10 @@ export default function DeliveriesPage() {
             </div>
 
             {/* Table */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left">
-                        <thead className="bg-gray-50 border-b border-gray-200">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-200">
+                    <table className="w-full text-left min-w-[1000px]">
+                        <thead className="bg-gray-50 border-b border-gray-200 font-bold uppercase tracking-tighter text-[10px] text-gray-400">
                             <tr>
                                 <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">ID</th>
                                 <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Type</th>
