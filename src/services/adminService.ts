@@ -314,7 +314,7 @@ export const adminService = {
 
   // Tasks (for tracking active tasks)
   getActiveTasks: async (params?: { page?: number; limit?: number; status?: string }): Promise<ApiPaginatedResponse<Task>> => {
-    const response = await apiClient.get(API_ENDPOINTS.TASKS.AVAILABLE, { params });
+    const response = await apiClient.get(API_ENDPOINTS.TASKS.ALL, { params });
     return response.data;
   },
 

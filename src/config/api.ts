@@ -53,6 +53,7 @@ export const API_ENDPOINTS = {
   TASKS: {
     LIST: '/tasks/my',
     AVAILABLE: '/tasks/available',
+    ALL: '/tasks',
     BY_ID: (id: string) => `/tasks/${id}`,
     STATS: '/tasks/stats',
     ACTIVE: '/tasks/my?status=IN_PROGRESS,ACCEPTED',
