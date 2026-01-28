@@ -182,10 +182,10 @@ export default function DeliveriesPage() {
                                                 {delivery.status === 'PENDING' && (
                                                     <button
                                                         onClick={() => acceptDelivery(delivery.id)}
-                                                        disabled={isAccepting}
+                                                        disabled={isAccepting && acceptingId === delivery.id}
                                                         className="text-white bg-green-500 hover:bg-green-600 px-3 py-1 rounded text-xs font-semibold transition-colors disabled:opacity-50"
                                                     >
-                                                        {isAccepting ? '...' : 'Accept'}
+                                                        {isAccepting && acceptingId === delivery.id ? '...' : 'Accept'}
                                                     </button>
                                                 )}
                                                 <button className="text-gray-400 hover:text-orange-500 transition-colors p-1">

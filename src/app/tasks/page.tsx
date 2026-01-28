@@ -156,10 +156,10 @@ export default function TasksPage() {
                                                 {task.status === 'PENDING' && (
                                                     <button
                                                         onClick={() => acceptTask(task.id)}
-                                                        disabled={isAccepting}
+                                                        disabled={isAccepting && acceptingId === task.id}
                                                         className="text-white bg-green-500 hover:bg-green-600 px-3 py-1 rounded text-xs font-semibold transition-colors disabled:opacity-50"
                                                     >
-                                                        {isAccepting ? '...' : 'Accept'}
+                                                        {isAccepting && acceptingId === task.id ? '...' : 'Accept'}
                                                     </button>
                                                 )}
                                                 <button className="text-gray-400 hover:text-orange-500 transition-colors p-1">
