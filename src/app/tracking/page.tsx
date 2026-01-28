@@ -9,7 +9,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { useState } from "react";
-import { useActiveTasks } from "@/hooks";
+import { useActiveTasks, useDeliveryRequests } from "@/hooks";
 import type { Task } from "@/services";
 import { TaskListSkeleton } from "@/components/Skeleton";
 
@@ -37,6 +37,7 @@ function getStatusStyle(status: string): string {
 function getStatusLabel(status: string): string {
   switch (status) {
     case "IN_PROGRESS":
+    case "IN_TRANSIT": // Added for deliveries
       return "In Progress";
     case "ACCEPTED":
       return "On the way";
@@ -47,18 +48,45 @@ function getStatusLabel(status: string): string {
   }
 }
 
+// Adapter to treat deliveries like tasks for the UI
+function deliveryToTask(delivery: any): any {
+  return {
+    id: delivery.id,
+    title: delivery.type === 'STANDARD_FAST_DELIVERY' ? 'Standard Delivery' : 'Load Delivery',
+    status: delivery.status,
+    address: delivery.pickupLocation,
+    scheduledDate: delivery.createdAt,
+    user: delivery.user,
+    tasker: delivery.deliveryPerson,
+    isDelivery: true,
+    pickupLocation: delivery.pickupLocation,
+    dropLocation: delivery.dropLocation,
+  };
+}
+
 export default function Tracking() {
-  const { data, isLoading, error, refetch } = useActiveTasks({
+  const { data: tasksData, isLoading: tasksLoading, error: tasksError, refetch: refetchTasks } = useActiveTasks({
     // Fetch all to avoid server 500 on comma-separated status
     // filter is applied client-side below
   });
+  const { data: deliveriesData, isLoading: deliveriesLoading, error: deliveriesError, refetch: refetchDeliveries } = useDeliveryRequests({});
 
-  // API returns: { status, data: Task[], pagination: { ... } }
-  const activeTasks = (data?.data || []).filter(
-    (task: Task) =>
-      task.status === "IN_PROGRESS" || task.status === "ACCEPTED"
-  );
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const isLoading = tasksLoading || deliveriesLoading;
+  const error = tasksError || deliveriesError;
+  const refetch = () => {
+    refetchTasks();
+    refetchDeliveries();
+  };
+
+  // Merge active tasks and deliveries
+  const activeTasks = [
+    ...(tasksData?.data || []).filter((task: any) => task.status === "IN_PROGRESS" || task.status === "ACCEPTED"),
+    ...(deliveriesData?.data || [])
+      .filter((d: any) => d.status === "IN_TRANSIT" || d.status === "ACCEPTED")
+      .map(deliveryToTask),
+  ];
+
+  const [selectedTask, setSelectedTask] = useState<any>(null);
 
   // Set first task as selected when data loads
   if (!selectedTask && activeTasks.length > 0) {
@@ -110,8 +138,8 @@ export default function Tracking() {
                 key={task.id}
                 onClick={() => setSelectedTask(task)}
                 className={`p-4 rounded-xl cursor-pointer border transition-all ${selectedTask?.id === task.id
-                    ? "bg-orange-50 border-orange-200 shadow-sm"
-                    : "bg-white border-transparent hover:bg-gray-50 hover:border-gray-200"
+                  ? "bg-orange-50 border-orange-200 shadow-sm"
+                  : "bg-white border-transparent hover:bg-gray-50 hover:border-gray-200"
                   }`}
               >
                 <div className="flex justify-between items-start mb-2">

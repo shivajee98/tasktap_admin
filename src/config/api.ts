@@ -59,6 +59,14 @@ export const API_ENDPOINTS = {
     ACTIVE: '/tasks/my?status=IN_PROGRESS,ACCEPTED',
   },
 
+  // Delivery Requests
+  DELIVERY_REQUESTS: {
+    LIST: '/delivery-requests',
+    BY_ID: (id: string) => `/delivery-requests/${id}`,
+    STATS: '/delivery-requests/admin/stats',
+    AVAILABLE: '/delivery-requests/available',
+  },
+
   // Public Services
   SERVICES: {
     LIST: '/services',

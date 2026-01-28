@@ -15,6 +15,7 @@ import {
   Tag,
   Award,
   Map,
+  Truck,
 } from "lucide-react";
 import { tokenStorage } from "@/lib/apiClient";
 
@@ -33,6 +34,7 @@ export default function Sidebar() {
     { to: "/taskers", icon: Hammer, label: "Tasker Management" },
     { to: "/services", icon: Briefcase, label: "Service Categories" },
     { to: "/tasks", icon: LayoutDashboard, label: "Task Management" },
+    { to: "/deliveries", icon: Truck, label: "Delivery Management" },
     { to: "/tracking", icon: MapPin, label: "Live Tracking" },
 
     { to: "/finance", icon: CreditCard, label: "Finance" },
@@ -61,8 +63,8 @@ export default function Sidebar() {
               key={link.to}
               href={link.to}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${isActive
-                  ? "bg-orange-50 text-orange-600 font-medium"
-                  : "text-gray-600 hover:bg-orange-50 hover:text-orange-600"
+                ? "bg-orange-50 text-orange-600 font-medium"
+                : "text-gray-600 hover:bg-orange-50 hover:text-orange-600"
                 }`}
             >
               <link.icon size={20} />
