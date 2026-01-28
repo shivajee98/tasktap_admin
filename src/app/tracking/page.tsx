@@ -49,7 +49,8 @@ function getStatusLabel(status: string): string {
 
 export default function Tracking() {
   const { data, isLoading, error, refetch } = useActiveTasks({
-    status: "IN_PROGRESS,ACCEPTED",
+    // Fetch all to avoid server 500 on comma-separated status
+    // filter is applied client-side below
   });
 
   // API returns: { status, data: Task[], pagination: { ... } }
@@ -108,11 +109,10 @@ export default function Tracking() {
               <div
                 key={task.id}
                 onClick={() => setSelectedTask(task)}
-                className={`p-4 rounded-xl cursor-pointer border transition-all ${
-                  selectedTask?.id === task.id
+                className={`p-4 rounded-xl cursor-pointer border transition-all ${selectedTask?.id === task.id
                     ? "bg-orange-50 border-orange-200 shadow-sm"
                     : "bg-white border-transparent hover:bg-gray-50 hover:border-gray-200"
-                }`}
+                  }`}
               >
                 <div className="flex justify-between items-start mb-2">
                   <span className="text-xs font-bold text-gray-500">
@@ -193,7 +193,7 @@ export default function Tracking() {
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold overflow-hidden">
                     {selectedTask.user?.profileImage ||
-                    selectedTask.user?.avatar ? (
+                      selectedTask.user?.avatar ? (
                       <img
                         src={
                           selectedTask.user.profileImage ||
