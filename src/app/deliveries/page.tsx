@@ -9,7 +9,7 @@ export default function DeliveriesPage() {
     const [statusFilter, setStatusFilter] = useState("ALL");
     const [search, setSearch] = useState("");
 
-    const { mutate: acceptDelivery, isPending: isAccepting } = useAcceptDelivery();
+    const { mutate: acceptDelivery, isPending: isAccepting, variables: acceptingId } = useAcceptDelivery();
     const { data, isLoading } = useDeliveryRequests({
         page: 1,
         limit: 50,

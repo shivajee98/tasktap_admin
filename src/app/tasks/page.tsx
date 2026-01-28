@@ -8,7 +8,7 @@ export default function TasksPage() {
     const [statusFilter, setStatusFilter] = useState("ALL");
     const [search, setSearch] = useState("");
 
-    const { mutate: acceptTask, isPending: isAccepting } = useAcceptTask();
+    const { mutate: acceptTask, isPending: isAccepting, variables: acceptingId } = useAcceptTask();
     // Gets ALL tasks because we mapped getActiveTasks to ALL endpoint
     const { data, isLoading } = useActiveTasks();
 
