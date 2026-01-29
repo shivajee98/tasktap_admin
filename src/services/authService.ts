@@ -59,4 +59,14 @@ export const authService = {
   isAuthenticated: (): boolean => {
     return !!tokenStorage.getAccessToken();
   },
+
+  forgotPassword: async (email: string): Promise<{ status: string; message: string }> => {
+    const response = await apiClient.post(API_ENDPOINTS.AUTH.FORGOT_PASSWORD, { email });
+    return response.data;
+  },
+
+  resetPassword: async (token: string, password: string, email?: string): Promise<{ status: string; message: string }> => {
+    const response = await apiClient.post(API_ENDPOINTS.AUTH.RESET_PASSWORD, { token, password, email });
+    return response.data;
+  },
 };

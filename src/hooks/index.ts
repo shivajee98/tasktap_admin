@@ -1,5 +1,5 @@
 // Auth hooks
-export { authKeys, useCurrentUser, useLogin, useLogout } from './useAuth';
+export { authKeys, useCurrentUser, useLogin, useLogout, useForgotPassword, useResetPassword } from './useAuth';
 
 // Admin hooks
 export {

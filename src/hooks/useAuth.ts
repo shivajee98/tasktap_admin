@@ -43,3 +43,16 @@ export const useLogout = () => {
     },
   });
 };
+
+export const useForgotPassword = () => {
+  return useMutation({
+    mutationFn: (email: string) => authService.forgotPassword(email),
+  });
+};
+
+export const useResetPassword = () => {
+  return useMutation({
+    mutationFn: (data: { token: string; password: string; email?: string }) =>
+      authService.resetPassword(data.token, data.password, data.email),
+  });
+};

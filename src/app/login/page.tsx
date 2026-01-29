@@ -113,12 +113,14 @@ export default function LoginPage() {
                 />
                 <span className="text-sm text-gray-600">Remember me</span>
               </label>
-              <a
-                href="#"
+              import Link from "next/link";
+              // ... (inside component)
+              <Link
+                href="/forgot-password"
                 className="text-sm text-orange-600 hover:text-orange-700 font-medium"
               >
                 Forgot password?
-              </a>
+              </Link>
             </div>
 
             {/* Submit Button */}
