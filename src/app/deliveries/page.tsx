@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { useDeliveryRequests, useAcceptDelivery } from "@/hooks";
-import { Search, Filter, Eye, Truck, Package, MapPin, Phone } from "lucide-react";
+import { Search, Filter, Eye, Truck, Package, MapPin, Phone, X, Calendar, Clock, Image as ImageIcon } from "lucide-react";
 import { DeliveryRequestStatus, DeliveryRequestType } from "@/services/deliveryService";
 
 export default function DeliveriesPage() {
     const [statusFilter, setStatusFilter] = useState("ALL");
     const [search, setSearch] = useState("");
+    const [selectedDelivery, setSelectedDelivery] = useState<any>(null);
 
     const { mutate: acceptDelivery, isPending: isAccepting, variables: acceptingId } = useAcceptDelivery();
     const { data, isLoading } = useDeliveryRequests({
@@ -146,23 +147,23 @@ export default function DeliveriesPage() {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-600 max-w-xs">
-                                            <div className="flex flex-col gap-1">
-                                                <div className="flex items-start gap-1">
+                                            <div className="flex flex-col gap-1 w-full overflow-hidden">
+                                                <div className="flex items-start gap-1 w-full">
                                                     <MapPin size={12} className="text-green-500 mt-1 flex-shrink-0" />
-                                                    <span className="text-xs truncate" title={delivery.pickupLocation}>{delivery.pickupLocation}</span>
+                                                    <span className="text-xs truncate max-w-[150px] inline-block" title={delivery.pickupLocation}>{delivery.pickupLocation}</span>
                                                 </div>
-                                                <div className="flex items-start gap-1">
+                                                <div className="flex items-start gap-1 w-full">
                                                     <MapPin size={12} className="text-red-500 mt-1 flex-shrink-0" />
-                                                    <span className="text-xs truncate" title={delivery.dropLocation}>{delivery.dropLocation}</span>
+                                                    <span className="text-xs truncate max-w-[150px] inline-block" title={delivery.dropLocation}>{delivery.dropLocation}</span>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-gray-600">
-                                            <div className="flex flex-col">
-                                                <span className="font-medium">{delivery.user?.fullName}</span>
+                                        <td className="px-6 py-4 text-sm text-gray-600 max-w-[150px]">
+                                            <div className="flex flex-col overflow-hidden">
+                                                <span className="font-medium truncate" title={delivery.user?.fullName}>{delivery.user?.fullName}</span>
                                                 <div className="flex items-center gap-1 text-xs text-gray-400">
-                                                    <Phone size={10} />
-                                                    <span>{delivery.phoneNumber}</span>
+                                                    <Phone size={10} className="flex-shrink-0" />
+                                                    <span className="truncate">{delivery.phoneNumber}</span>
                                                 </div>
                                             </div>
                                         </td>
@@ -188,7 +189,10 @@ export default function DeliveriesPage() {
                                                         {isAccepting && acceptingId === delivery.id ? '...' : 'Accept'}
                                                     </button>
                                                 )}
-                                                <button className="text-gray-400 hover:text-orange-500 transition-colors p-1">
+                                                <button
+                                                    onClick={() => setSelectedDelivery(delivery)}
+                                                    className="text-gray-400 hover:text-orange-500 transition-colors p-1"
+                                                >
                                                     <Eye size={18} />
                                                 </button>
                                             </div>
@@ -206,6 +210,156 @@ export default function DeliveriesPage() {
                     </table>
                 </div>
             </div>
+
+            {/* Delivery Details Modal */}
+            {selectedDelivery && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+                        <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+                            <div>
+                                <h3 className="text-xl font-bold text-gray-900">Delivery Details</h3>
+                                <p className="text-sm text-gray-500">#{selectedDelivery.id}</p>
+                            </div>
+                            <button
+                                onClick={() => setSelectedDelivery(null)}
+                                className="text-gray-400 hover:text-gray-600 transition-colors p-2 rounded-lg hover:bg-gray-100"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div className="p-6 overflow-y-auto flex-1">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Status & Type */}
+                                <div className="space-y-4">
+                                    <div>
+                                        <h4 className="text-sm font-semibold text-gray-900 mb-2">Status & Type</h4>
+                                        <div className="flex gap-2">
+                                            <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${getStatusColor(selectedDelivery.status)}`}>
+                                                {selectedDelivery.status.replace('_', ' ')}
+                                            </span>
+                                            <span className="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
+                                                {getTypeName(selectedDelivery.type)}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h4 className="text-sm font-semibold text-gray-900 mb-2">Pricing</h4>
+                                        <div className="bg-gray-50 rounded-xl p-4">
+                                            <div className="flex justify-between items-center text-sm mb-2">
+                                                <span className="text-gray-600">Estimated Price:</span>
+                                                <span className="font-semibold text-gray-900">₹{selectedDelivery.estimatedPrice || 0}</span>
+                                            </div>
+                                            <div className="flex justify-between items-center text-sm">
+                                                <span className="text-gray-600">Final Price:</span>
+                                                <span className="font-semibold text-gray-900">₹{selectedDelivery.finalPrice || 'Pending'}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Customer Info */}
+                                <div className="space-y-4">
+                                    <div>
+                                        <h4 className="text-sm font-semibold text-gray-900 mb-2">Customer Details</h4>
+                                        <div className="bg-gray-50 rounded-xl p-4 space-y-2">
+                                            <div className="flex items-center gap-2 text-sm">
+                                                <div className="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center font-bold text-xs uppercase">
+                                                    {selectedDelivery.user?.fullName?.charAt(0) || '?'}
+                                                </div>
+                                                <span className="font-medium text-gray-900">{selectedDelivery.user?.fullName || 'Unknown User'}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                                                <Phone size={14} />
+                                                <span>{selectedDelivery.phoneNumber}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Locations */}
+                                <div className="md:col-span-2">
+                                    <h4 className="text-sm font-semibold text-gray-900 mb-2">Route Details</h4>
+                                    <div className="bg-gray-50 rounded-xl p-4 flex flex-col gap-4">
+                                        <div className="flex gap-3">
+                                            <div className="mt-1 flex flex-col items-center">
+                                                <MapPin size={16} className="text-green-500" />
+                                                <div className="w-0.5 h-6 bg-gray-200 my-1"></div>
+                                                <MapPin size={16} className="text-red-500" />
+                                            </div>
+                                            <div className="flex-1 flex flex-col justify-between py-0.5">
+                                                <div className="pb-4">
+                                                    <p className="text-xs font-semibold text-gray-500 uppercase">Pickup Location</p>
+                                                    <p className="text-sm text-gray-900 mt-0.5">{selectedDelivery.pickupLocation}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-xs font-semibold text-gray-500 uppercase">Drop Location</p>
+                                                    <p className="text-sm text-gray-900 mt-0.5">{selectedDelivery.dropLocation}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="text-sm text-gray-500 border-t border-gray-200 pt-3">
+                                            Total Distance: <span className="font-semibold text-gray-900">{selectedDelivery.distance?.toFixed(2) || 'N/A'} km</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Timestamps */}
+                                <div className="md:col-span-2">
+                                    <h4 className="text-sm font-semibold text-gray-900 mb-2">Timeline</h4>
+                                    <div className="bg-gray-50 rounded-xl p-4 grid grid-cols-2 sm:grid-cols-4 gap-4">
+                                        <div className="flex flex-col gap-1">
+                                            <span className="text-xs text-gray-500 uppercase font-semibold">Created</span>
+                                            <span className="text-sm text-gray-900">{new Date(selectedDelivery.createdAt).toLocaleDateString()}</span>
+                                        </div>
+                                        {selectedDelivery.acceptedAt && (
+                                            <div className="flex flex-col gap-1">
+                                                <span className="text-xs text-blue-500 uppercase font-semibold">Accepted</span>
+                                                <span className="text-sm text-gray-900">{new Date(selectedDelivery.acceptedAt).toLocaleDateString()}</span>
+                                            </div>
+                                        )}
+                                        {selectedDelivery.inTransitAt && (
+                                            <div className="flex flex-col gap-1">
+                                                <span className="text-xs text-purple-500 uppercase font-semibold">In Transit</span>
+                                                <span className="text-sm text-gray-900">{new Date(selectedDelivery.inTransitAt).toLocaleDateString()}</span>
+                                            </div>
+                                        )}
+                                        {selectedDelivery.deliveredAt && (
+                                            <div className="flex flex-col gap-1">
+                                                <span className="text-xs text-green-500 uppercase font-semibold">Delivered</span>
+                                                <span className="text-sm text-gray-900">{new Date(selectedDelivery.deliveredAt).toLocaleDateString()}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Images attached */}
+                                {(selectedDelivery.documentImage || (selectedDelivery.objectImages && selectedDelivery.objectImages.length > 0)) && (
+                                    <div className="md:col-span-2">
+                                        <h4 className="text-sm font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                                            <ImageIcon size={16} className="text-gray-500" />
+                                            Attached Images
+                                        </h4>
+                                        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin">
+                                            {selectedDelivery.documentImage && (
+                                                <div className="relative group rounded-xl overflow-hidden flex-shrink-0 w-24 h-24 border border-gray-200">
+                                                    <img src={selectedDelivery.documentImage} alt="Document" className="object-cover w-full h-full" />
+                                                </div>
+                                            )}
+                                            {selectedDelivery.objectImages?.map((img: string, i: number) => (
+                                                <div key={i} className="relative group rounded-xl overflow-hidden flex-shrink-0 w-24 h-24 border border-gray-200">
+                                                    <img src={img} alt={`Object ${i}`} className="object-cover w-full h-full" />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
