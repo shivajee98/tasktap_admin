@@ -36,8 +36,8 @@ export const authService = {
 
     // Store tokens
     if (response.data.data) {
-      const { accessToken, refreshToken } = response.data.data;
-      tokenStorage.setTokens(accessToken, refreshToken);
+      const { token, refreshToken } = response.data.data;
+      tokenStorage.setTokens(token, refreshToken);
     }
 
     return response.data;

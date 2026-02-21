@@ -108,7 +108,7 @@ apiClient.interceptors.response.use(
           { refreshToken }
         );
 
-        const { accessToken, refreshToken: newRefreshToken } = response.data.data;
+        const { token: accessToken, refreshToken: newRefreshToken } = response.data.data;
         tokenStorage.setTokens(accessToken, newRefreshToken);
 
         processQueue(null, accessToken);
