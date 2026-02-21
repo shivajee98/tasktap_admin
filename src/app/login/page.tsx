@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useLogin } from "@/hooks";
 import { Loader2, Mail, Lock, AlertCircle } from "lucide-react";
 
@@ -113,8 +114,6 @@ export default function LoginPage() {
                 />
                 <span className="text-sm text-gray-600">Remember me</span>
               </label>
-              import Link from "next/link";
-              // ... (inside component)
               <Link
                 href="/forgot-password"
                 className="text-sm text-orange-600 hover:text-orange-700 font-medium"
