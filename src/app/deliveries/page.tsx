@@ -99,17 +99,16 @@ export default function DeliveriesPage() {
             {/* Table */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-200">
-                    <table className="w-full text-left min-w-[1000px]">
+                    <table className="w-full text-left min-w-[900px]">
                         <thead className="bg-gray-50 border-b border-gray-200 font-bold uppercase tracking-tighter text-[10px] text-gray-400">
                             <tr>
-                                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">ID</th>
-                                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Type</th>
-                                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Locations</th>
-                                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Contact</th>
-                                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Price</th>
-                                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Created</th>
-                                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+                                <th className="px-4 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Type</th>
+                                <th className="px-4 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Locations</th>
+                                <th className="px-4 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Contact</th>
+                                <th className="px-4 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                                <th className="px-4 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Price</th>
+                                <th className="px-4 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Created</th>
+                                <th className="px-4 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
@@ -117,23 +116,19 @@ export default function DeliveriesPage() {
                                 // Skeleton
                                 [...Array(5)].map((_, i) => (
                                     <tr key={i} className="animate-pulse">
-                                        <td className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-16"></div></td>
-                                        <td className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-32"></div></td>
-                                        <td className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-48"></div></td>
-                                        <td className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-24"></div></td>
-                                        <td className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-20"></div></td>
-                                        <td className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-16"></div></td>
-                                        <td className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-24"></div></td>
-                                        <td className="px-6 py-4"></td>
+                                        <td className="px-4 py-4"><div className="h-4 bg-gray-200 rounded w-32"></div></td>
+                                        <td className="px-4 py-4"><div className="h-4 bg-gray-200 rounded w-48"></div></td>
+                                        <td className="px-4 py-4"><div className="h-4 bg-gray-200 rounded w-24"></div></td>
+                                        <td className="px-4 py-4"><div className="h-4 bg-gray-200 rounded w-20"></div></td>
+                                        <td className="px-4 py-4"><div className="h-4 bg-gray-200 rounded w-16"></div></td>
+                                        <td className="px-4 py-4"><div className="h-4 bg-gray-200 rounded w-24"></div></td>
+                                        <td className="px-4 py-4"></td>
                                     </tr>
                                 ))
                             ) : filteredDeliveries.length > 0 ? (
                                 filteredDeliveries.map((delivery: any) => (
                                     <tr key={delivery.id} className="hover:bg-gray-50/50 transition-colors">
-                                        <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                                            #{delivery.id.slice(0, 8)}
-                                        </td>
-                                        <td className="px-6 py-4 text-sm text-gray-600">
+                                        <td className="px-4 py-4 text-sm text-gray-600">
                                             <div className="flex items-center gap-2">
                                                 <span className="p-1.5 bg-gray-100 rounded-md text-gray-500">
                                                     {getTypeIcon(delivery.type)}
@@ -146,19 +141,19 @@ export default function DeliveriesPage() {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-gray-600 max-w-xs">
+                                        <td className="px-4 py-4 text-sm text-gray-600 max-w-[200px]">
                                             <div className="flex flex-col gap-1 w-full overflow-hidden">
                                                 <div className="flex items-start gap-1 w-full">
                                                     <MapPin size={12} className="text-green-500 mt-1 flex-shrink-0" />
-                                                    <span className="text-xs truncate max-w-[150px] inline-block" title={delivery.pickupLocation}>{delivery.pickupLocation}</span>
+                                                    <span className="text-xs truncate max-w-[180px] inline-block" title={delivery.pickupLocation}>{delivery.pickupLocation}</span>
                                                 </div>
                                                 <div className="flex items-start gap-1 w-full">
                                                     <MapPin size={12} className="text-red-500 mt-1 flex-shrink-0" />
-                                                    <span className="text-xs truncate max-w-[150px] inline-block" title={delivery.dropLocation}>{delivery.dropLocation}</span>
+                                                    <span className="text-xs truncate max-w-[180px] inline-block" title={delivery.dropLocation}>{delivery.dropLocation}</span>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-gray-600 max-w-[150px]">
+                                        <td className="px-4 py-4 text-sm text-gray-600 max-w-[150px]">
                                             <div className="flex flex-col overflow-hidden">
                                                 <span className="font-medium truncate" title={delivery.user?.fullName}>{delivery.user?.fullName}</span>
                                                 <div className="flex items-center gap-1 text-xs text-gray-400">
@@ -167,18 +162,18 @@ export default function DeliveriesPage() {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-4 py-4">
                                             <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${getStatusColor(delivery.status)}`}>
                                                 {delivery.status.replace('_', ' ')}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                                        <td className="px-4 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">
                                             ₹{delivery.estimatedPrice || delivery.finalPrice || 0}
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-gray-500">
+                                        <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">
                                             {new Date(delivery.createdAt).toLocaleDateString()}
                                         </td>
-                                        <td className="px-6 py-4 text-right">
+                                        <td className="px-4 py-4 text-right">
                                             <div className="flex justify-end gap-2">
                                                 {delivery.status === 'PENDING' && (
                                                     <button
@@ -201,7 +196,7 @@ export default function DeliveriesPage() {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
+                                    <td colSpan={7} className="px-4 py-12 text-center text-gray-500">
                                         No delivery requests found matching your filters.
                                     </td>
                                 </tr>
