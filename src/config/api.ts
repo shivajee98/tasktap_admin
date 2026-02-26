@@ -69,6 +69,14 @@ export const API_ENDPOINTS = {
     AVAILABLE: '/delivery-requests/available',
   },
 
+  // Pool
+  POOL: {
+    BALANCE: '/pool/balance',
+    TRANSACTIONS: '/pool/transactions',
+    STATS: '/pool/stats',
+    OUTBOUND: '/pool/outbound',
+  },
+
   // Public Services
   SERVICES: {
     LIST: '/services',

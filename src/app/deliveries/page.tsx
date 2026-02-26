@@ -1,16 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { useDeliveryRequests, useAcceptDelivery } from "@/hooks";
-import { Search, Filter, Eye, Truck, Package, MapPin, Phone, X, Calendar, Clock, Image as ImageIcon } from "lucide-react";
+import { useDeliveryRequests, useAcceptDelivery, useUpdatePaymentStatus } from "@/hooks";
+import { Search, Eye, Truck, Package, MapPin, Phone, X, Image as ImageIcon, Star, IndianRupee, CheckCircle } from "lucide-react";
 import { DeliveryRequestStatus, DeliveryRequestType } from "@/services/deliveryService";
 
 export default function DeliveriesPage() {
     const [statusFilter, setStatusFilter] = useState("ALL");
     const [search, setSearch] = useState("");
     const [selectedDelivery, setSelectedDelivery] = useState<any>(null);
+    const [paymentModal, setPaymentModal] = useState<any>(null);
+    const [paymentForm, setPaymentForm] = useState({ paymentStatus: '', paidAmount: '', paymentNotes: '' });
 
     const { mutate: acceptDelivery, isPending: isAccepting, variables: acceptingId } = useAcceptDelivery();
+    const { mutate: updatePayment, isPending: isUpdatingPayment } = useUpdatePaymentStatus();
     const { data, isLoading } = useDeliveryRequests({
         page: 1,
         limit: 50,
@@ -19,10 +22,7 @@ export default function DeliveriesPage() {
     const allDeliveries = data?.data || [];
 
     const filteredDeliveries = allDeliveries.filter((delivery: any) => {
-        // Status Filter
         if (statusFilter !== "ALL" && delivery.status !== statusFilter) return false;
-
-        // Search
         if (search) {
             const q = search.toLowerCase();
             return (
@@ -47,12 +47,58 @@ export default function DeliveriesPage() {
         }
     };
 
+    const getPaymentStatusColor = (status: string) => {
+        switch (status) {
+            case 'PAID': return 'bg-green-100 text-green-700';
+            case 'PARTIALLY_PAID': return 'bg-amber-100 text-amber-700';
+            case 'UNPAID': return 'bg-red-100 text-red-700';
+            default: return 'bg-gray-100 text-gray-700';
+        }
+    };
+
+    const getPaymentStatusLabel = (status: string) => {
+        switch (status) {
+            case 'PAID': return 'Paid';
+            case 'PARTIALLY_PAID': return 'Partial';
+            case 'UNPAID': return 'Unpaid';
+            default: return 'Unpaid';
+        }
+    };
+
     const getTypeName = (type: string) => {
         return type === 'STANDARD_FAST_DELIVERY' ? 'Standard Delivery' : 'Load Pickup/Drop';
     };
 
     const getTypeIcon = (type: string) => {
         return type === 'STANDARD_FAST_DELIVERY' ? <Package size={16} /> : <Truck size={16} />;
+    };
+
+    const handleOpenPaymentModal = (delivery: any) => {
+        setPaymentModal(delivery);
+        setPaymentForm({
+            paymentStatus: delivery.paymentStatus || 'UNPAID',
+            paidAmount: delivery.paidAmount?.toString() || '',
+            paymentNotes: delivery.paymentNotes || '',
+        });
+    };
+
+    const handleSubmitPayment = () => {
+        if (!paymentModal) return;
+        updatePayment({
+            id: paymentModal.id,
+            data: {
+                paymentStatus: paymentForm.paymentStatus,
+                paidAmount: paymentForm.paidAmount ? parseFloat(paymentForm.paidAmount) : undefined,
+                paymentNotes: paymentForm.paymentNotes || undefined,
+            },
+        }, {
+            onSuccess: () => {
+                setPaymentModal(null);
+                if (selectedDelivery?.id === paymentModal.id) {
+                    setSelectedDelivery((prev: any) => prev ? { ...prev, paymentStatus: paymentForm.paymentStatus, paidAmount: paymentForm.paidAmount ? parseFloat(paymentForm.paidAmount) : prev.paidAmount } : null);
+                }
+            },
+        });
     };
 
     return (
@@ -99,27 +145,28 @@ export default function DeliveriesPage() {
             {/* Table */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-200">
-                    <table className="w-full text-left min-w-[900px]">
-                        <thead className="bg-gray-50 border-b border-gray-200 font-bold uppercase tracking-tighter text-[10px] text-gray-400">
+                    <table className="w-full text-left min-w-[1200px]">
+                        <thead className="bg-gray-50 border-b border-gray-200">
                             <tr>
-                                <th className="px-4 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Type</th>
-                                <th className="px-4 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Locations</th>
-                                <th className="px-4 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Contact</th>
-                                <th className="px-4 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                                <th className="px-4 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Price</th>
-                                <th className="px-4 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Created</th>
-                                <th className="px-4 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+                                <th className="px-4 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider w-[170px]">Type</th>
+                                <th className="px-4 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider w-[260px]">Locations</th>
+                                <th className="px-4 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider w-[170px]">Contact</th>
+                                <th className="px-4 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider w-[110px]">Status</th>
+                                <th className="px-4 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider w-[100px]">Payment</th>
+                                <th className="px-4 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider w-[90px]">Price</th>
+                                <th className="px-4 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider w-[100px]">Created</th>
+                                <th className="px-4 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider w-[150px]">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                             {isLoading ? (
-                                // Skeleton
                                 [...Array(5)].map((_, i) => (
                                     <tr key={i} className="animate-pulse">
                                         <td className="px-4 py-4"><div className="h-4 bg-gray-200 rounded w-32"></div></td>
                                         <td className="px-4 py-4"><div className="h-4 bg-gray-200 rounded w-48"></div></td>
                                         <td className="px-4 py-4"><div className="h-4 bg-gray-200 rounded w-24"></div></td>
                                         <td className="px-4 py-4"><div className="h-4 bg-gray-200 rounded w-20"></div></td>
+                                        <td className="px-4 py-4"><div className="h-4 bg-gray-200 rounded w-16"></div></td>
                                         <td className="px-4 py-4"><div className="h-4 bg-gray-200 rounded w-16"></div></td>
                                         <td className="px-4 py-4"><div className="h-4 bg-gray-200 rounded w-24"></div></td>
                                         <td className="px-4 py-4"></td>
@@ -141,21 +188,21 @@ export default function DeliveriesPage() {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-4 py-4 text-sm text-gray-600 max-w-[200px]">
+                                        <td className="px-4 py-4 text-sm text-gray-600">
                                             <div className="flex flex-col gap-1 w-full overflow-hidden">
                                                 <div className="flex items-start gap-1 w-full">
                                                     <MapPin size={12} className="text-green-500 mt-1 flex-shrink-0" />
-                                                    <span className="text-xs truncate max-w-[180px] inline-block" title={delivery.pickupLocation}>{delivery.pickupLocation}</span>
+                                                    <span className="text-xs truncate max-w-[220px] inline-block" title={delivery.pickupLocation}>{delivery.pickupLocation}</span>
                                                 </div>
                                                 <div className="flex items-start gap-1 w-full">
                                                     <MapPin size={12} className="text-red-500 mt-1 flex-shrink-0" />
-                                                    <span className="text-xs truncate max-w-[180px] inline-block" title={delivery.dropLocation}>{delivery.dropLocation}</span>
+                                                    <span className="text-xs truncate max-w-[220px] inline-block" title={delivery.dropLocation}>{delivery.dropLocation}</span>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-4 py-4 text-sm text-gray-600 max-w-[150px]">
+                                        <td className="px-4 py-4 text-sm text-gray-600">
                                             <div className="flex flex-col overflow-hidden">
-                                                <span className="font-medium truncate" title={delivery.user?.fullName}>{delivery.user?.fullName}</span>
+                                                <span className="font-medium truncate max-w-[150px]" title={delivery.user?.fullName}>{delivery.user?.fullName}</span>
                                                 <div className="flex items-center gap-1 text-xs text-gray-400">
                                                     <Phone size={10} className="flex-shrink-0" />
                                                     <span className="truncate">{delivery.phoneNumber}</span>
@@ -167,8 +214,13 @@ export default function DeliveriesPage() {
                                                 {delivery.status.replace('_', ' ')}
                                             </span>
                                         </td>
+                                        <td className="px-4 py-4">
+                                            <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getPaymentStatusColor(delivery.paymentStatus || 'UNPAID')}`}>
+                                                {getPaymentStatusLabel(delivery.paymentStatus || 'UNPAID')}
+                                            </span>
+                                        </td>
                                         <td className="px-4 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">
-                                            ₹{delivery.estimatedPrice || delivery.finalPrice || 0}
+                                            ₹{Math.round(delivery.paidAmount || delivery.estimatedPrice || delivery.finalPrice || 0)}
                                         </td>
                                         <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">
                                             {new Date(delivery.createdAt).toLocaleDateString()}
@@ -184,6 +236,14 @@ export default function DeliveriesPage() {
                                                         {isAccepting && acceptingId === delivery.id ? '...' : 'Accept'}
                                                     </button>
                                                 )}
+                                                {delivery.paymentStatus !== 'PAID' && (
+                                                    <button
+                                                        onClick={() => handleOpenPaymentModal(delivery)}
+                                                        className="text-white bg-orange-500 hover:bg-orange-600 px-3 py-1 rounded text-xs font-semibold transition-colors"
+                                                    >
+                                                        Mark Paid
+                                                    </button>
+                                                )}
                                                 <button
                                                     onClick={() => setSelectedDelivery(delivery)}
                                                     className="text-gray-400 hover:text-orange-500 transition-colors p-1"
@@ -196,7 +256,7 @@ export default function DeliveriesPage() {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={7} className="px-4 py-12 text-center text-gray-500">
+                                    <td colSpan={8} className="px-4 py-12 text-center text-gray-500">
                                         No delivery requests found matching your filters.
                                     </td>
                                 </tr>
@@ -205,6 +265,72 @@ export default function DeliveriesPage() {
                     </table>
                 </div>
             </div>
+
+            {/* Payment Modal */}
+            {paymentModal && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
+                        <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+                            <h3 className="text-lg font-bold text-gray-900">Update Payment</h3>
+                            <button onClick={() => setPaymentModal(null)} className="text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-gray-100">
+                                <X size={18} />
+                            </button>
+                        </div>
+                        <div className="p-6 space-y-4">
+                            <div className="text-sm text-gray-500 bg-gray-50 rounded-lg p-3">
+                                <span className="font-medium text-gray-900">Delivery #{paymentModal.id.slice(0, 8)}</span>
+                                <br />
+                                Estimated: ₹{Math.round(paymentModal.estimatedPrice || 0)}
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Payment Status</label>
+                                <select
+                                    value={paymentForm.paymentStatus}
+                                    onChange={(e) => setPaymentForm(prev => ({ ...prev, paymentStatus: e.target.value }))}
+                                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
+                                >
+                                    <option value="UNPAID">Unpaid</option>
+                                    <option value="PARTIALLY_PAID">Partially Paid</option>
+                                    <option value="PAID">Fully Paid</option>
+                                </select>
+                            </div>
+
+                            {(paymentForm.paymentStatus === 'PAID' || paymentForm.paymentStatus === 'PARTIALLY_PAID') && (
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Amount Collected (₹)</label>
+                                    <input
+                                        type="number"
+                                        value={paymentForm.paidAmount}
+                                        onChange={(e) => setPaymentForm(prev => ({ ...prev, paidAmount: e.target.value }))}
+                                        placeholder={`${Math.round(paymentModal.estimatedPrice || 0)}`}
+                                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
+                                    />
+                                </div>
+                            )}
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Notes (optional)</label>
+                                <textarea
+                                    value={paymentForm.paymentNotes}
+                                    onChange={(e) => setPaymentForm(prev => ({ ...prev, paymentNotes: e.target.value }))}
+                                    placeholder="Payment notes..."
+                                    rows={2}
+                                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 resize-none"
+                                />
+                            </div>
+
+                            <button
+                                onClick={handleSubmitPayment}
+                                disabled={isUpdatingPayment}
+                                className="w-full bg-orange-500 text-white py-2.5 rounded-xl font-bold text-sm hover:bg-orange-600 transition disabled:opacity-50"
+                            >
+                                {isUpdatingPayment ? 'Updating...' : 'Update Payment'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Delivery Details Modal */}
             {selectedDelivery && (
@@ -229,7 +355,7 @@ export default function DeliveriesPage() {
                                 <div className="space-y-4">
                                     <div>
                                         <h4 className="text-sm font-semibold text-gray-900 mb-2">Status & Type</h4>
-                                        <div className="flex gap-2">
+                                        <div className="flex flex-wrap gap-2">
                                             <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${getStatusColor(selectedDelivery.status)}`}>
                                                 {selectedDelivery.status.replace('_', ' ')}
                                             </span>
@@ -241,20 +367,60 @@ export default function DeliveriesPage() {
 
                                     <div>
                                         <h4 className="text-sm font-semibold text-gray-900 mb-2">Pricing</h4>
-                                        <div className="bg-gray-50 rounded-xl p-4">
-                                            <div className="flex justify-between items-center text-sm mb-2">
+                                        <div className="bg-gray-50 rounded-xl p-4 space-y-2">
+                                            <div className="flex justify-between items-center text-sm">
                                                 <span className="text-gray-600">Estimated Price:</span>
-                                                <span className="font-semibold text-gray-900">₹{selectedDelivery.estimatedPrice || 0}</span>
+                                                <span className="font-semibold text-gray-900">₹{Math.round(selectedDelivery.estimatedPrice || 0)}</span>
                                             </div>
                                             <div className="flex justify-between items-center text-sm">
                                                 <span className="text-gray-600">Final Price:</span>
-                                                <span className="font-semibold text-gray-900">₹{selectedDelivery.finalPrice || 'Pending'}</span>
+                                                <span className="font-semibold text-gray-900">₹{selectedDelivery.finalPrice ? Math.round(selectedDelivery.finalPrice) : 'Pending'}</span>
                                             </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Payment Status */}
+                                    <div>
+                                        <h4 className="text-sm font-semibold text-gray-900 mb-2">Payment</h4>
+                                        <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-sm text-gray-600">Status:</span>
+                                                <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${getPaymentStatusColor(selectedDelivery.paymentStatus || 'UNPAID')}`}>
+                                                    {getPaymentStatusLabel(selectedDelivery.paymentStatus || 'UNPAID')}
+                                                </span>
+                                            </div>
+                                            {selectedDelivery.paidAmount != null && (
+                                                <div className="flex justify-between items-center text-sm">
+                                                    <span className="text-gray-600">Amount Paid:</span>
+                                                    <span className="font-semibold text-green-700">₹{Math.round(selectedDelivery.paidAmount)}</span>
+                                                </div>
+                                            )}
+                                            {selectedDelivery.paidAt && (
+                                                <div className="flex justify-between items-center text-sm">
+                                                    <span className="text-gray-600">Paid At:</span>
+                                                    <span className="text-gray-900">{new Date(selectedDelivery.paidAt).toLocaleDateString()}</span>
+                                                </div>
+                                            )}
+                                            {selectedDelivery.paymentNotes && (
+                                                <div className="text-sm">
+                                                    <span className="text-gray-600">Notes:</span>
+                                                    <p className="text-gray-900 mt-0.5">{selectedDelivery.paymentNotes}</p>
+                                                </div>
+                                            )}
+                                            {selectedDelivery.paymentStatus !== 'PAID' && (
+                                                <button
+                                                    onClick={() => handleOpenPaymentModal(selectedDelivery)}
+                                                    className="w-full mt-1 bg-orange-500 text-white py-2 rounded-lg text-xs font-bold hover:bg-orange-600 transition flex items-center justify-center gap-1"
+                                                >
+                                                    <IndianRupee size={12} />
+                                                    Mark as Paid
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
 
-                                {/* Customer Info */}
+                                {/* Customer + Delivery Person */}
                                 <div className="space-y-4">
                                     <div>
                                         <h4 className="text-sm font-semibold text-gray-900 mb-2">Customer Details</h4>
@@ -271,6 +437,33 @@ export default function DeliveriesPage() {
                                             </div>
                                         </div>
                                     </div>
+
+                                    {/* Delivery Person */}
+                                    {selectedDelivery.deliveryPerson && (
+                                        <div>
+                                            <h4 className="text-sm font-semibold text-gray-900 mb-2">Delivery Person</h4>
+                                            <div className="bg-gray-50 rounded-xl p-4 space-y-2">
+                                                <div className="flex items-center gap-2 text-sm">
+                                                    <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs uppercase">
+                                                        {selectedDelivery.deliveryPerson.fullName?.charAt(0) || '?'}
+                                                    </div>
+                                                    <span className="font-medium text-gray-900">{selectedDelivery.deliveryPerson.fullName}</span>
+                                                </div>
+                                                {selectedDelivery.deliveryPerson.phone && (
+                                                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                                                        <Phone size={14} />
+                                                        <span>{selectedDelivery.deliveryPerson.phone}</span>
+                                                    </div>
+                                                )}
+                                                {selectedDelivery.deliveryPerson.rating != null && selectedDelivery.deliveryPerson.rating > 0 && (
+                                                    <div className="flex items-center gap-1 text-sm text-gray-600">
+                                                        <Star size={14} className="text-yellow-500 fill-yellow-500" />
+                                                        <span>{selectedDelivery.deliveryPerson.rating.toFixed(1)}</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Locations */}
@@ -295,7 +488,7 @@ export default function DeliveriesPage() {
                                             </div>
                                         </div>
                                         <div className="text-sm text-gray-500 border-t border-gray-200 pt-3">
-                                            Total Distance: <span className="font-semibold text-gray-900">{selectedDelivery.distance?.toFixed(2) || 'N/A'} km</span>
+                                            Total Distance: <span className="font-semibold text-gray-900">{selectedDelivery.distance?.toFixed(1) || 'N/A'} km</span>
                                         </div>
                                     </div>
                                 </div>

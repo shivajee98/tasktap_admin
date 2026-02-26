@@ -15,6 +15,12 @@ export enum DeliveryRequestStatus {
     CANCELLED = 'CANCELLED',
 }
 
+export enum PaymentStatus {
+    UNPAID = 'UNPAID',
+    PARTIALLY_PAID = 'PARTIALLY_PAID',
+    PAID = 'PAID',
+}
+
 export interface DeliveryRequest {
     id: string;
     type: DeliveryRequestType;
@@ -33,6 +39,10 @@ export interface DeliveryRequest {
     cityName?: string;
     estimatedPrice?: number;
     finalPrice?: number;
+    paymentStatus?: PaymentStatus;
+    paidAmount?: number;
+    paymentNotes?: string;
+    paidAt?: string;
     acceptedAt?: string;
     inTransitAt?: string;
     deliveredAt?: string;
@@ -52,6 +62,7 @@ export interface DeliveryRequest {
         fullName: string;
         profileImage?: string;
         phone?: string;
+        rating?: number;
     };
     createdAt: string;
     updatedAt: string;
@@ -75,6 +86,11 @@ export const deliveryService = {
 
     acceptDelivery: async (id: string): Promise<{ data: DeliveryRequest }> => {
         const response = await apiClient.post(`${API_ENDPOINTS.DELIVERY_REQUESTS.BY_ID(id)}/accept`);
+        return response.data;
+    },
+
+    updatePaymentStatus: async (id: string, data: { paymentStatus: string; paidAmount?: number; paymentNotes?: string }): Promise<{ data: DeliveryRequest }> => {
+        const response = await apiClient.patch(`${API_ENDPOINTS.DELIVERY_REQUESTS.BY_ID(id)}/payment`, data);
         return response.data;
     },
 };

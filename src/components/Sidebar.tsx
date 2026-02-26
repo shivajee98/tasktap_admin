@@ -17,6 +17,7 @@ import {
   Map,
   Truck,
   X,
+  Wallet,
 } from "lucide-react";
 import { tokenStorage } from "@/lib/apiClient";
 
@@ -36,6 +37,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose:
     { to: "/services", icon: Briefcase, label: "Service Categories" },
     { to: "/tasks", icon: LayoutDashboard, label: "Task Management" },
     { to: "/deliveries", icon: Truck, label: "Delivery Management" },
+    { to: "/pool", icon: Wallet, label: "Central Pool" },
     { to: "/tracking", icon: MapPin, label: "Live Tracking" },
 
     { to: "/finance", icon: CreditCard, label: "Finance" },

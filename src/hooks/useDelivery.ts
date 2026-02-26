@@ -42,3 +42,15 @@ export const useAcceptDelivery = () => {
         },
     });
 };
+
+export const useUpdatePaymentStatus = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ id, data }: { id: string; data: { paymentStatus: string; paidAmount?: number; paymentNotes?: string } }) =>
+            deliveryService.updatePaymentStatus(id, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: deliveryKeys.all });
+        },
+    });
+};
