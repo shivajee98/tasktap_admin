@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useDeliveryRequests, useAcceptDelivery, useUpdatePaymentStatus } from "@/hooks";
-import { Search, Eye, Truck, Package, MapPin, Phone, X, Image as ImageIcon, Star, IndianRupee, CheckCircle } from "lucide-react";
+import { Search, Eye, Truck, Package, MapPin, Phone, X, Image as ImageIcon, Star, IndianRupee, CheckCircle, ExternalLink } from "lucide-react";
 import { DeliveryRequestStatus, DeliveryRequestType } from "@/services/deliveryService";
 
 export default function DeliveriesPage() {
@@ -40,7 +40,9 @@ export default function DeliveriesPage() {
         switch (status) {
             case 'PENDING': return 'bg-yellow-100 text-yellow-800';
             case 'ACCEPTED': return 'bg-blue-100 text-blue-800';
+            case 'REACHED_PICKUP': return 'bg-indigo-100 text-indigo-800';
             case 'IN_TRANSIT': return 'bg-purple-100 text-purple-800';
+            case 'REACHED_DROP': return 'bg-pink-100 text-pink-800';
             case 'DELIVERED': return 'bg-green-100 text-green-800';
             case 'CANCELLED': return 'bg-red-100 text-red-800';
             default: return 'bg-gray-100 text-gray-800';
@@ -116,7 +118,7 @@ export default function DeliveriesPage() {
             {/* Filters */}
             <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-6 flex flex-col lg:flex-row gap-4 lg:items-center justify-between">
                 <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
-                    {['ALL', 'PENDING', 'ACCEPTED', 'IN_TRANSIT', 'DELIVERED', 'CANCELLED'].map((status) => (
+                    {['ALL', 'PENDING', 'ACCEPTED', 'REACHED_PICKUP', 'IN_TRANSIT', 'REACHED_DROP', 'DELIVERED', 'CANCELLED'].map((status) => (
                         <button
                             key={status}
                             onClick={() => setStatusFilter(status)}
@@ -478,11 +480,37 @@ export default function DeliveriesPage() {
                                             </div>
                                             <div className="flex-1 flex flex-col justify-between py-0.5">
                                                 <div className="pb-4">
-                                                    <p className="text-xs font-semibold text-gray-500 uppercase">Pickup Location</p>
+                                                    <div className="flex justify-between items-start">
+                                                        <p className="text-xs font-semibold text-gray-500 uppercase">Pickup Location</p>
+                                                        {selectedDelivery.pickupLatitude && selectedDelivery.pickupLongitude && (
+                                                            <a
+                                                                href={`https://www.google.com/maps/dir/?api=1&destination=${selectedDelivery.pickupLatitude},${selectedDelivery.pickupLongitude}`}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="text-[10px] text-orange-500 hover:text-orange-600 font-bold flex items-center gap-0.5"
+                                                            >
+                                                                <ExternalLink size={10} />
+                                                                Get Directions
+                                                            </a>
+                                                        )}
+                                                    </div>
                                                     <p className="text-sm text-gray-900 mt-0.5">{selectedDelivery.pickupLocation}</p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-xs font-semibold text-gray-500 uppercase">Drop Location</p>
+                                                    <div className="flex justify-between items-start">
+                                                        <p className="text-xs font-semibold text-gray-500 uppercase">Drop Location</p>
+                                                        {selectedDelivery.dropLatitude && selectedDelivery.dropLongitude && (
+                                                            <a
+                                                                href={`https://www.google.com/maps/dir/?api=1&destination=${selectedDelivery.dropLatitude},${selectedDelivery.dropLongitude}`}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="text-[10px] text-orange-500 hover:text-orange-600 font-bold flex items-center gap-0.5"
+                                                            >
+                                                                <ExternalLink size={10} />
+                                                                Get Directions
+                                                            </a>
+                                                        )}
+                                                    </div>
                                                     <p className="text-sm text-gray-900 mt-0.5">{selectedDelivery.dropLocation}</p>
                                                 </div>
                                             </div>

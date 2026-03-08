@@ -10,7 +10,9 @@ export enum DeliveryRequestType {
 export enum DeliveryRequestStatus {
     PENDING = 'PENDING',
     ACCEPTED = 'ACCEPTED',
+    REACHED_PICKUP = 'REACHED_PICKUP',
     IN_TRANSIT = 'IN_TRANSIT',
+    REACHED_DROP = 'REACHED_DROP',
     DELIVERED = 'DELIVERED',
     CANCELLED = 'CANCELLED',
 }
