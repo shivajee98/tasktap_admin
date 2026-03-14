@@ -153,6 +153,7 @@ export default function DeliveriesPage() {
                                 <th className="px-4 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider w-[170px]">Type</th>
                                 <th className="px-4 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider w-[260px]">Locations</th>
                                 <th className="px-4 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider w-[170px]">Contact</th>
+                                <th className="px-4 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider w-[130px]">Platform</th>
                                 <th className="px-4 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider w-[110px]">Status</th>
                                 <th className="px-4 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider w-[100px]">Payment</th>
                                 <th className="px-4 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider w-[90px]">Price</th>
@@ -167,6 +168,7 @@ export default function DeliveriesPage() {
                                         <td className="px-4 py-4"><div className="h-4 bg-gray-200 rounded w-32"></div></td>
                                         <td className="px-4 py-4"><div className="h-4 bg-gray-200 rounded w-48"></div></td>
                                         <td className="px-4 py-4"><div className="h-4 bg-gray-200 rounded w-24"></div></td>
+                                        <td className="px-4 py-4"><div className="h-4 bg-gray-200 rounded w-20"></div></td>
                                         <td className="px-4 py-4"><div className="h-4 bg-gray-200 rounded w-20"></div></td>
                                         <td className="px-4 py-4"><div className="h-4 bg-gray-200 rounded w-16"></div></td>
                                         <td className="px-4 py-4"><div className="h-4 bg-gray-200 rounded w-16"></div></td>
@@ -209,6 +211,11 @@ export default function DeliveriesPage() {
                                                     <Phone size={10} className="flex-shrink-0" />
                                                     <span className="truncate">{delivery.phoneNumber}</span>
                                                 </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-4 py-4">
+                                            <div className="flex flex-col">
+                                                <span className="text-sm font-medium text-gray-900">{delivery.deliveryService || '-'}</span>
                                             </div>
                                         </td>
                                         <td className="px-4 py-4">
@@ -364,6 +371,16 @@ export default function DeliveriesPage() {
                                             <span className="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
                                                 {getTypeName(selectedDelivery.type)}
                                             </span>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h4 className="text-sm font-semibold text-gray-900 mb-2">Delivery Platform</h4>
+                                        <div className="bg-gray-50 rounded-xl p-4">
+                                            <div className="flex items-center gap-2">
+                                                <Truck size={16} className="text-orange-500" />
+                                                <span className="text-sm font-medium text-gray-900">{selectedDelivery.deliveryService || 'Auto Selection'}</span>
+                                            </div>
                                         </div>
                                     </div>
 
