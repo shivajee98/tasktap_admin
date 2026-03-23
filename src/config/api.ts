@@ -36,7 +36,10 @@ export const API_ENDPOINTS = {
     // Support
     SUPPORT_TICKETS: '/admin/support',
     RESPOND_TO_TICKET: (id: string) => `/admin/support/${id}/respond`,
+    // Notifications
+    SEND_NOTIFICATION: '/admin/notifications/send',
     // Work Zones
+
     ZONES: '/zones', // Backend: /api/v1/zones -> workZoneRoutes (admin: POST /, PATCH /:id, DELETE /:id) -> BUT wait, workZoneRoutes has /api/v1/zones. Let's check routes again.
     // Checking server.ts: app.use(`${API_PREFIX}/zones`, workZoneRoutes);
     // workZoneRoutes: router.get('/', protect, workZoneController.getWorkZones); (Public/Tasker)

@@ -23,7 +23,9 @@ export {
   useAcceptTask,
   useSupportTickets,
   useRespondToTicket,
+  useSendNotification,
 } from './useAdmin';
+
 export {
   deliveryKeys,
   useDeliveryRequests,

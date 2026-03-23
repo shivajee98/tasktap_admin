@@ -216,3 +216,11 @@ export const useRespondToTicket = () => {
     },
   });
 };
+
+// Notifications
+export const useSendNotification = () => {
+  return useMutation({
+    mutationFn: (data: { title: string; message: string; target: string; userIds?: string[] }) =>
+      adminService.sendNotification(data),
+  });
+};

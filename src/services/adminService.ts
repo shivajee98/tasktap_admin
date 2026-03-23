@@ -422,4 +422,11 @@ export const adminService = {
   deleteReward: async (id: string): Promise<void> => {
     await apiClient.delete(`${API_ENDPOINTS.ADMIN.REWARDS}/${id}`);
   },
+
+  // Notifications
+  sendNotification: async (data: { title: string; message: string; target: string; userIds?: string[] }): Promise<{ status: string; message: string }> => {
+    const response = await apiClient.post(API_ENDPOINTS.ADMIN.SEND_NOTIFICATION, data);
+    return response.data;
+  },
 };
+
