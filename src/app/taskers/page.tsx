@@ -12,7 +12,7 @@ import {
   Clock,
 } from "lucide-react";
 import { useState } from "react";
-import { useUsers, useUpdateUserStatus } from "@/hooks";
+import { useUsers, useVerifyTasker } from "@/hooks";
 import type { Tasker } from "@/services";
 import { UsersTableSkeleton } from "@/components/Skeleton";
 
@@ -37,7 +37,7 @@ export default function TaskersList() {
     search: search || undefined,
   });
 
-  const updateStatusMutation = useUpdateUserStatus();
+  const verifyTaskerMutation = useVerifyTasker();
 
   // API returns: { status, data: Tasker[], pagination: { total, page, ... } }
   const taskers = data?.data || [];
@@ -46,9 +46,9 @@ export default function TaskersList() {
   const totalPages = pagination?.totalPages || 1;
 
   const handleVerify = async (taskerId: string, approve: boolean) => {
-    await updateStatusMutation.mutateAsync({
+    await verifyTaskerMutation.mutateAsync({
       id: taskerId,
-      status: approve ? "ACTIVE" : "INACTIVE",
+      isVerified: approve,
     });
   };
 
@@ -190,7 +190,7 @@ export default function TaskersList() {
                           <div>
                             <div className="font-semibold text-gray-900 flex items-center gap-1">
                               {tasker.fullName || tasker.name}
-                              {tasker.taskerProfile?.isVerified && (
+                              {tasker.adminApprovalStatus === "APPROVED" && (
                                 <ShieldCheck
                                   size={14}
                                   className="text-blue-500"
@@ -205,20 +205,11 @@ export default function TaskersList() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex flex-wrap gap-1">
-                          {tasker.taskerProfile?.skills
-                            ?.slice(0, 2)
-                            .map((skill, i) => (
-                              <span
-                                key={i}
-                                className="px-2 py-0.5 bg-gray-100 rounded-full text-xs font-medium text-gray-700"
-                              >
-                                {skill}
-                              </span>
-                            ))}
-                          {(tasker.taskerProfile?.skills?.length || 0) > 2 && (
-                            <span className="px-2 py-0.5 bg-gray-100 rounded-full text-xs font-medium text-gray-500">
-                              +
-                              {(tasker.taskerProfile?.skills?.length || 0) - 2}
+                          {tasker.category && (
+                            <span
+                              className="px-2 py-0.5 bg-gray-100 rounded-full text-xs font-medium text-gray-700"
+                            >
+                              {tasker.category}
                             </span>
                           )}
                         </div>
@@ -226,15 +217,22 @@ export default function TaskersList() {
                       <td className="px-6 py-4">
                         <span
                           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
-                            tasker.taskerProfile?.isVerified
+                            tasker.adminApprovalStatus === "APPROVED"
                               ? "bg-green-50 text-green-700 border-green-200"
+                              : tasker.adminApprovalStatus === "REJECTED"
+                              ? "bg-red-50 text-red-700 border-red-200"
                               : "bg-yellow-50 text-yellow-700 border-yellow-200"
                           }`}
                         >
-                          {tasker.taskerProfile?.isVerified ? (
+                          {tasker.adminApprovalStatus === "APPROVED" ? (
                             <>
                               <CheckCircle2 size={12} className="mr-1" />
                               Verified
+                            </>
+                          ) : tasker.adminApprovalStatus === "REJECTED" ? (
+                            <>
+                              <XCircle size={12} className="mr-1" />
+                              Rejected
                             </>
                           ) : (
                             <>
@@ -251,22 +249,22 @@ export default function TaskersList() {
                               size={14}
                               className="text-yellow-400 fill-yellow-400"
                             />
-                            {tasker.taskerProfile?.rating?.toFixed(1) || "N/A"}
+                            {tasker.rating?.toFixed(1) || "0.0"}
                           </div>
                           <div className="text-xs text-gray-500">
-                            {tasker.taskerProfile?.totalTasks || 0} Tasks
+                            {tasker.totalTasks || 0} Tasks
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <span
                           className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                            tasker.taskerProfile?.isAvailable
+                            tasker.isOnline
                               ? "bg-green-100 text-green-700"
                               : "bg-gray-100 text-gray-500"
                           }`}
                         >
-                          {tasker.taskerProfile?.isAvailable
+                          {tasker.isOnline
                             ? "Available"
                             : "Unavailable"}
                         </span>
@@ -279,11 +277,11 @@ export default function TaskersList() {
                           >
                             <Eye size={18} />
                           </button>
-                          {!tasker.taskerProfile?.isVerified ? (
+                          {tasker.adminApprovalStatus !== "APPROVED" ? (
                             <>
                               <button
                                 onClick={() => handleVerify(tasker.id, true)}
-                                disabled={updateStatusMutation.isPending}
+                                disabled={verifyTaskerMutation.isPending}
                                 className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                                 title="Approve"
                               >
@@ -291,7 +289,7 @@ export default function TaskersList() {
                               </button>
                               <button
                                 onClick={() => handleVerify(tasker.id, false)}
-                                disabled={updateStatusMutation.isPending}
+                                disabled={verifyTaskerMutation.isPending}
                                 className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                 title="Reject"
                               >

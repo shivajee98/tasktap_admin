@@ -98,6 +98,7 @@ export const useVerifyTasker = () => {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: adminKeys.taskerDetail(variables.id) });
       queryClient.invalidateQueries({ queryKey: adminKeys.taskers() });
+      queryClient.invalidateQueries({ queryKey: adminKeys.users() });
       queryClient.invalidateQueries({ queryKey: adminKeys.dashboard() });
     },
   });

@@ -48,6 +48,10 @@ export interface User {
   profileImage?: string;
   emailVerified: boolean;
   isOnline?: boolean;
+  adminApprovalStatus?: 'PENDING' | 'APPROVED' | 'REJECTED';
+  rating?: number;
+  totalTasks?: number;
+  category?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -264,7 +268,9 @@ export const adminService = {
   },
 
   verifyTasker: async (id: string, isVerified: boolean): Promise<{ data: Tasker }> => {
-    const response = await apiClient.patch(API_ENDPOINTS.ADMIN.VERIFY_TASKER(id), { isVerified });
+    const response = await apiClient.patch(API_ENDPOINTS.ADMIN.VERIFY_TASKER(id), {
+      status: isVerified ? 'APPROVED' : 'REJECTED',
+    });
     return response.data;
   },
 
