@@ -228,8 +228,20 @@ export default function DeliveriesPage() {
                                                 {getPaymentStatusLabel(delivery.paymentStatus || 'UNPAID')}
                                             </span>
                                         </td>
-                                        <td className="px-4 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">
-                                            ₹{Math.round(delivery.paidAmount || delivery.estimatedPrice || delivery.finalPrice || 0)}
+                                        <td className="px-4 py-4 text-sm text-gray-900 whitespace-nowrap">
+                                            <div className="font-bold text-gray-900">
+                                                ₹{Math.round(delivery.customerCharge || delivery.paidAmount || delivery.estimatedPrice || delivery.finalPrice || 0)}
+                                            </div>
+                                            {delivery.riderPayout !== undefined && delivery.riderPayout > 0 && (
+                                                <div className="text-[11px] text-gray-500 flex items-center gap-1 mt-0.5">
+                                                    <span>Rider: ₹{Math.round(delivery.riderPayout)}</span>
+                                                    {delivery.netContribution !== undefined && (
+                                                        <span className={`font-bold ${delivery.netContribution >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                                                            ({delivery.netContribution >= 0 ? `+₹${Math.round(delivery.netContribution)}` : `-₹${Math.abs(Math.round(delivery.netContribution))}`})
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            )}
                                         </td>
                                         <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">
                                             {new Date(delivery.createdAt).toLocaleDateString()}

@@ -118,10 +118,15 @@ apiClient.interceptors.response.use(
         }
 
         return apiClient(originalRequest);
-      } catch (refreshError) {
+      } catch (refreshError: any) {
         processQueue(refreshError as Error, null);
-        tokenStorage.clearTokens();
-        window.location.href = '/login';
+        // Only clear tokens and redirect to login if refresh token was actually rejected by server (401/403)
+        if (refreshError?.response?.status === 401 || refreshError?.response?.status === 403) {
+          tokenStorage.clearTokens();
+          if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+            window.location.href = '/login';
+          }
+        }
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

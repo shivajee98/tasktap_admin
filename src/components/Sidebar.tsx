@@ -16,6 +16,7 @@ import {
   Award,
   Map,
   Truck,
+  Calculator,
   X,
   Wallet,
   Bell,
@@ -39,6 +40,7 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose:
     { to: "/services", icon: Briefcase, label: "Service Categories" },
     { to: "/tasks", icon: LayoutDashboard, label: "Task Management" },
     { to: "/deliveries", icon: Truck, label: "Delivery Management" },
+    { to: "/pricing", icon: Calculator, label: "Delivery Pricing" },
     { to: "/pool", icon: Wallet, label: "Central Pool" },
     { to: "/tracking", icon: MapPin, label: "Live Tracking" },
 

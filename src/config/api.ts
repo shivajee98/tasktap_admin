@@ -1,7 +1,7 @@
 // API Configuration for Admin Panel
 export const API_CONFIG = {
   BASE_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1',
-  TIMEOUT: 15000,
+  TIMEOUT: 30000,
 } as const;
 
 export const API_ENDPOINTS = {
@@ -39,19 +39,13 @@ export const API_ENDPOINTS = {
     // Notifications
     SEND_NOTIFICATION: '/admin/notifications/send',
     // Work Zones
-
-    ZONES: '/zones', // Backend: /api/v1/zones -> workZoneRoutes (admin: POST /, PATCH /:id, DELETE /:id) -> BUT wait, workZoneRoutes has /api/v1/zones. Let's check routes again.
-    // Checking server.ts: app.use(`${API_PREFIX}/zones`, workZoneRoutes);
-    // workZoneRoutes: router.get('/', protect, workZoneController.getWorkZones); (Public/Tasker)
-    // Admin routes in workZoneRoutes: POST /, PATCH /:id, DELETE /:id.
-    // So for admin, it's just /zones for list (GET), create (POST), and /zones/:id for update/delete.
-
+    ZONES: '/zones',
     // Gig Incentives
-    INCENTIVES: '/incentives', // Backend: /api/v1/incentives
+    INCENTIVES: '/incentives',
     // Tasker Offers
-    OFFERS: '/offers', // Backend: /api/v1/offers
+    OFFERS: '/offers',
     // Bazaar Rewards
-    REWARDS: '/rewards', // Backend: /api/v1/rewards
+    REWARDS: '/rewards',
   },
 
   // Tasks
@@ -70,6 +64,13 @@ export const API_ENDPOINTS = {
     BY_ID: (id: string) => `/delivery-requests/${id}`,
     STATS: '/delivery-requests/admin/stats',
     AVAILABLE: '/delivery-requests/available',
+  },
+
+  // Delivery Pricing & Unit Economics
+  DELIVERY_PRICING: {
+    CONFIG: '/admin/delivery-pricing',
+    UPDATE: '/admin/delivery-pricing',
+    ANALYTICS: '/admin/delivery-pricing/analytics',
   },
 
   // Pool

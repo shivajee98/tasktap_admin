@@ -35,6 +35,13 @@ export {
   useUpdatePaymentStatus,
 } from './useDelivery';
 export {
+  deliveryPricingKeys,
+  useDeliveryPricingConfig,
+  useUpdateDeliveryPricingConfig,
+  useDeliveryPricingAnalytics,
+  useSimulatePricing,
+} from './useDeliveryPricing';
+export {
   poolKeys,
   usePoolBalance,
   usePoolTransactions,
